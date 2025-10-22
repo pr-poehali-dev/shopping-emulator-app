@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
+import VideoPlayer from '@/components/VideoPlayer';
 
 interface Movie {
   id: number;
@@ -52,6 +53,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useState<number[]>([]);
   const [hasSubscription, setHasSubscription] = useState(false);
+  const [playingMovie, setPlayingMovie] = useState<Movie | null>(null);
 
   const featuredMovie = MOVIES.find(m => m.featured);
 
@@ -144,7 +146,11 @@ const Index = () => {
                     </div>
                   </div>
                   <div className="flex gap-4">
-                    <Button size="lg" className="bg-primary hover:bg-primary/90">
+                    <Button 
+                      size="lg" 
+                      className="bg-primary hover:bg-primary/90"
+                      onClick={() => setPlayingMovie(featuredMovie)}
+                    >
                       <Icon name="Play" size={20} className="mr-2" />
                       Смотреть
                     </Button>
@@ -211,7 +217,13 @@ const Index = () => {
                             <Badge key={q} variant="outline" className="border-primary text-primary text-xs">{q}</Badge>
                           ))}
                         </div>
-                        <Button className="w-full bg-primary hover:bg-primary/90">
+                        <Button 
+                          className="w-full bg-primary hover:bg-primary/90"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPlayingMovie(movie);
+                          }}
+                        >
                           <Icon name="Play" size={16} className="mr-2" />
                           Смотреть
                         </Button>
@@ -233,7 +245,10 @@ const Index = () => {
                   <div className="relative aspect-[2/3]">
                     <img src={movie.image} alt={movie.title} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Button className="bg-primary">
+                      <Button 
+                        className="bg-primary"
+                        onClick={() => setPlayingMovie(movie)}
+                      >
                         <Icon name="Play" size={20} className="mr-2" />
                         Смотреть
                       </Button>
@@ -430,6 +445,13 @@ const Index = () => {
           </div>
         )}
       </main>
+
+      {playingMovie && (
+        <VideoPlayer 
+          title={playingMovie.title}
+          onClose={() => setPlayingMovie(null)}
+        />
+      )}
     </div>
   );
 };
